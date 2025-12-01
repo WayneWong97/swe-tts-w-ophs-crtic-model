@@ -183,6 +183,10 @@ def convert_trajectory_to_funccall_messages(
     trajectory: List[Dict[str, Any]],
     add_in_context_learning_example: bool,
 ) -> tuple[Optional[List[Dict[str, Any]]], Optional[str], int]:
+    # Guard: trajectory 可能为 None/非列表，统一兜底为空列表
+    if not trajectory or not isinstance(trajectory, list):
+        return None, "empty_trajectory", 0
+
     messages = build_messages_from_trajectory(trajectory)
     if not messages:
         return None, "empty_trajectory", 0
@@ -225,7 +229,9 @@ def main() -> None:
                     continue
 
                 total_runs += 1
-                trajectory = value.get("trajectory", [])
+                trajectory = value.get("trajectory") or []
+                if not isinstance(trajectory, list):
+                    trajectory = []
                 messages, error, removed = convert_trajectory_to_funccall_messages(
                     trajectory, args.add_in_context_learning_example
                 )

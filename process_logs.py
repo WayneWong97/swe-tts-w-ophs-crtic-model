@@ -104,6 +104,9 @@ def aggregate_run_outputs(input_dir: str, file_pattern: str, output_file: str):
 
                         git_patch = data.get("test_result", {}).get("git_patch")
                         history = data.get("history")
+                        # Guard: history 可能为 null 或非列表，兜底为空列表
+                        if not history or not isinstance(history, list):
+                            history = []
                         
                         # 使用 .get() 链式调用来安全地访问嵌套字典
                         report = data.get("report", {})
